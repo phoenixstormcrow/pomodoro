@@ -1,0 +1,10 @@
+body {
+  background-color: #3F5683;
+}
+
+#clock {
+  width: 500px;
+  height: 500px;
+  border: 5px solid #ca9;
+  border-radius: 250px;
+}
