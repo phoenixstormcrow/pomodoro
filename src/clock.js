@@ -2,71 +2,69 @@
 
 'use strict';
 
-const minColor = '#fc5',
-    secColor = '#fc5',
-    min = 60 * 1000,
-    hr = 60 * min;
+import hand from './hand';
 
-let startTime, elapsedTime;
+const MINUTE = 60 * 1000,
+      HOUR = 60 * MINUTE;
 
-function polygonStr(...args) {
-  let a = [];
-  for (let i = 0; i < 6; i += 2) {
-    a.push([args[i], args[i+1]].join(','));
+let handle;
+
+function animate (hands, cx, cy) {
+  // performance.now() let's us track the time
+  // even when tab not visible.
+  let start = performance.now();
+
+  function step () {
+    hands.forEach(function (h) {
+      h.move(start, cx, cy);
+    });
+    handle = requestAnimationFrame(step);
   }
-  return a.join(' ');
+
+  handle = requestAnimationFrame(step);
 }
 
-function secondHand (ctx, coords) {
-  return ctx.line(...coords).stroke(secColor);
-}
+function clock (element) {
+  let w, h, O, midnight,
+      context = SVG(element.id);
 
-function minuteHand (ctx, coords) {
-  return ctx.polygon(polygonStr(...coords))
-    .stroke(minColor).fill(minColor);
-}
+  function initialize () {
+    w = element.clientWidth;
+    h = element.clientHeight;
+    O = [w / 2, h / 2];
+    midnight = [O[0], O[1] + 10, O[0], 0];
+    context.spof();
+  }
 
-function animateSecond (elem, cx, cy) {
-  elem.animate(min, '-')
-    .rotate(360, cx, cy)
-    .during(function (pos) {
-      elapsedTime = Date.now() - startTime;
-      if (pos === 1) {
-        console.log(elapsedTime / 1000);
-      }
-    })
-    .loop();
-}
-
-function clock(element) {
-  let w = element.clientWidth,
-      h = element.clientHeight,
-      O = [w/2, h/2],
-      midnight = [O[0], O[1] + 10, O[0], 0];
-
-  // create an svg child node
-  let context = SVG('clock').spof();
-  SVG.on(window, 'resize', function () { context.spof(); });
+  // initialize variables
+  SVG.on(window, 'resize', initialize);
+  initialize();
 
   // draw hands
-  let minute = minuteHand(context, [O[0] - 6, O[1] - 5, ...midnight]);
-  let second = secondHand(context, midnight);
+  let minuteHand = hand(context, HOUR, [O[0] - 6, O[1] - 5, ...midnight]),
+      secondHand = hand(context, MINUTE, [O[0] - 2, O[1] - 1, ...midnight]);
+
+  function start () {
+    animate([minuteHand, secondHand], ...O);
+  }
+
+  function stop () {
+    cancelAnimationFrame(handle);
+    handle = null;
+  }
 
   // set up events
-  context.click(function (evt) {
-    console.log(evt.clientX, evt.clientY);
+  context.on('dblclick', function () {
+    if (handle) stop();
+    else start();
   });
 
   return {
-    svg: context,
-    start () {
-      startTime = Date.now();
-      animateSecond(second, ...O);
-      minute.animate(hr, '-').rotate(360, ...O).loop();
-    }
+    context,
+    start,
+    stop
   };
 }
 
-global.ps = polygonStr;
 global.clock = clock;
 export default clock;

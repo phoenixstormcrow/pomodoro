@@ -1,3 +1,5 @@
+'use strict';
+
 import clock from './clock';
 
 let c = clock(document.getElementById('clock'));
