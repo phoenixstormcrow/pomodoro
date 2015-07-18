@@ -2,7 +2,7 @@
 
 'use strict';
 
-import hand from './hand';
+import hand from './clockHand';
 
 const MINUTE = 60 * 1000,
       HOUR = 60 * MINUTE;
@@ -32,7 +32,7 @@ function clock (element) {
     w = element.clientWidth;
     h = element.clientHeight;
     O = [w / 2, h / 2];
-    midnight = [O[0], O[1] + 10, O[0], 0];
+    midnight = [O[0], O[1], O[0], 0];
     context.spof();
   }
 
