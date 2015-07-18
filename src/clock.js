@@ -43,11 +43,12 @@ function clock (element) {
   initialize();
 
   // draw face
+  /* eslint no-unused-vars:1 */
   let clockFace = face(context, r, ...O);
 
   // draw hands -- 3rd arg polygon coords
   let minuteHand = hand(context, HOUR, [O[0] - 0.024 * r, O[1] - 0.02 * r, ...midnight]),
-      secondHand = hand(context, MINUTE, [O[0] - 0.008 * r, O[1] - 0.004 * r, ...midnight]);
+      secondHand = hand(context, MINUTE, [O[0] - 0.0024 * r, O[1] - 0.002 * r, ...midnight]);
 
   function start () {
     animate([minuteHand, secondHand], ...O);
