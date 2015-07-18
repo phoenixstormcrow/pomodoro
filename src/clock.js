@@ -2,7 +2,8 @@
 
 'use strict';
 
-import hand from './hand';
+import hand from './clockHand';
+import face from './clockFace';
 
 const MINUTE = 60 * 1000,
       HOUR = 60 * MINUTE;
@@ -25,14 +26,15 @@ function animate (hands, cx, cy) {
 }
 
 function clock (element) {
-  let w, h, O, midnight,
+  let w, h, r, O, midnight,
       context = SVG(element.id);
 
   function initialize () {
     w = element.clientWidth;
     h = element.clientHeight;
+    r = Math.min(w, h) / 2 - 10;
     O = [w / 2, h / 2];
-    midnight = [O[0], O[1] + 10, O[0], 0];
+    midnight = [O[0], O[1], O[0], O[1] - r];
     context.spof();
   }
 
@@ -40,9 +42,13 @@ function clock (element) {
   SVG.on(window, 'resize', initialize);
   initialize();
 
-  // draw hands
-  let minuteHand = hand(context, HOUR, [O[0] - 6, O[1] - 5, ...midnight]),
-      secondHand = hand(context, MINUTE, [O[0] - 2, O[1] - 1, ...midnight]);
+  // draw face
+  /* eslint no-unused-vars:1 */
+  let clockFace = face(context, r, ...O);
+
+  // draw hands -- 3rd arg polygon coords
+  let minuteHand = hand(context, HOUR, [O[0] - 0.024 * r, O[1] - 0.02 * r, ...midnight]),
+      secondHand = hand(context, MINUTE, [O[0] - 0.0024 * r, O[1] - 0.002 * r, ...midnight]);
 
   function start () {
     animate([minuteHand, secondHand], ...O);

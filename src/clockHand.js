@@ -17,7 +17,7 @@ function polygonStr (...coords) {
 
 function drawHand (ctx, coords) {
   return ctx.polygon(polygonStr(...coords))
-    .stroke(COLOR).fill(COLOR);
+    .stroke(COLOR).fill({color: COLOR, opacity: 0.5});
 }
 
 function moveHand (hand, period, startTime, cx, cy) {
